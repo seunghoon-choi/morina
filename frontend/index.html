@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>ByeTax - 간편 세금 계산</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- ── 로그인 화면 (인증 없을 때 전체 오버레이) ─────────────────── -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo-wrap">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+        <rect width="72" height="72" rx="22" fill="#EEF0FF"/>
+        <path d="M22 54h28M36 18v26M29 26l7-8 7 8" stroke="#5B6CF9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="login-app-name">ByeTax</div>
+    <div class="login-app-desc">소득세 신고도움 서비스</div>
+
+    <button class="btn-kakao" onclick="kakaoLogin()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
+      </svg>
+      카카오로 로그인
+    </button>
+
+    <button id="btn-dev-login" class="btn-dev-login" onclick="devLogin()">
+      개발용: 테스트 로그인
+    </button>
+  </div>
+</div>
+
+<!-- ── 앱 헤더 ────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="header-inner">
+    <button id="btn-header-back" class="btn-header-back hidden" onclick="handleBack()">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 5l-6 6 6 6"/>
+      </svg>
+    </button>
+    <div id="logo-area" class="logo-area" onclick="resetUI()">
+      <span class="logo-text">ByeTax</span>
+    </div>
+    <h1 id="header-page-title" class="header-page-title hidden"></h1>
+    <div class="header-spacer"></div>
+    <div id="user-area" class="user-area hidden">
+      <img id="user-avatar" class="user-avatar" src="" alt="" />
+      <span id="user-name" class="user-name"></span>
+      <button class="btn-logout" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── 토스트 ─────────────────────────────────────────────────── -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- ── 메인 콘텐츠 ────────────────────────────────────────────── -->
+<main class="main-content">
+
+  <!-- 공유 배너 -->
+  <div id="share-banner" class="share-banner hidden">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 10v3a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3M8 10V3M5 6l3-3 3 3"/>
+    </svg>
+    공유된 분석 결과 · 유효기간 7일
+  </div>
+
+  <!-- 공유 오류 -->
+  <div id="share-error" class="share-error hidden">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+      <rect width="48" height="48" rx="12" fill="#FEE2E2"/>
+      <path d="M24 16v10M24 30v2" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <div style="margin-top:16px;font-weight:700;color:#1E2A4A">링크를 불러올 수 없습니다</div>
+    <div id="share-error-msg" style="margin-top:6px;font-size:13px;color:#94A3B8"></div>
+  </div>
+
+  <!-- ══════════════════ 분석 탭 ══════════════════ -->
+  <div id="tab-analyze">
+
+    <!-- 업로드 섹션 -->
+    <section id="upload-section" class="upload-section">
+      <div class="upload-hero">
+        <div class="upload-hero-icon">
+          <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+            <rect width="72" height="72" rx="22" fill="#EEF0FF"/>
+            <path d="M22 54h28M36 18v26M29 26l7-8 7 8" stroke="#5B6CF9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="upload-hero-title">소득세 PDF 업로드</div>
+        <div class="upload-hero-desc">국세청 소득세 신고도움서비스 PDF를 업로드하면<br>자동으로 분석하고 세금을 계산합니다</div>
+      </div>
+
+      <div id="drop-zone" class="drop-zone">
+        <input type="file" id="pdf-input" accept=".pdf" class="file-input" />
+        <div class="drop-zone-inner">
+          <div class="drop-text">PDF 파일을 여기에 끌어다 놓거나</div>
+          <button class="btn-upload" onclick="document.getElementById('pdf-input').click()">
+            파일 선택하기
+          </button>
+          <div class="drop-hint">소득세 신고도움서비스 PDF만 지원합니다</div>
+        </div>
+      </div>
+
+      <div id="file-info" class="file-info hidden">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect width="18" height="18" rx="4" fill="#EEF0FF"/>
+          <path d="M5 9l3 3 5-5" stroke="#5B6CF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span id="file-name-text"></span>
+        <button class="btn-remove" onclick="clearFile()">✕</button>
+      </div>
+
+      <button id="btn-analyze" class="btn-analyze hidden" onclick="uploadPDF()">
+        분석 시작
+      </button>
+    </section>
+
+    <!-- 로딩 -->
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <div class="loading-text">PDF 분석 중...</div>
+      <div class="loading-sub">잠시만 기다려 주세요</div>
+    </div>
+
+    <!-- 에러 -->
+    <div id="error-box" class="error-box hidden">
+      <span id="error-msg"></span>
+      <button class="btn-retry" onclick="resetUI()">다시 시도</button>
+    </div>
+
+    <!-- 결과 섹션 -->
+    <div id="result-section" class="result-section hidden">
+
+      <!-- 납세자 기본정보 -->
+      <div class="card card-primary">
+        <div class="card-header">
+          <span class="card-label">납세자 기본정보</span>
+        </div>
+        <div class="card-body info-grid" id="card-taxpayer"></div>
+      </div>
+
+      <!-- AI 분석 -->
+      <div class="card card-ai" id="card-ai-wrap">
+        <div class="card-header ai-header">
+          <span class="card-label">AI 분석 리포트</span>
+          <span id="ai-risk-badge" class="risk-badge risk-medium hidden"></span>
+          <div class="ai-loading" id="ai-loading">
+            <div class="spinner-sm"></div> 분석 중...
+          </div>
+        </div>
+        <div class="card-body" id="ai-body">
+          <div class="ai-comments" id="ai-comments"></div>
+          <div class="ai-note" id="ai-note"></div>
+        </div>
+      </div>
+
+      <!-- 세금 계산 -->
+      <div class="card card-calc" id="card-calc-wrap">
+        <div class="card-header calc-header">
+          <span class="card-label">예상 세금 계산</span>
+          <span class="badge-sub">2024년 귀속 기준</span>
+          <div class="calc-loading" id="calc-loading">
+            <div class="spinner-sm"></div> 계산 중...
+          </div>
+        </div>
+        <div class="card-body" id="calc-body">
+          <div class="calc-steps" id="calc-steps"></div>
+        </div>
+      </div>
+
+      <!-- 사업장별 수입금액 -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-label">사업장별 수입금액</span>
+          <span id="biz-total-badge" class="badge"></span>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table class="data-table" id="table-businesses">
+              <thead>
+                <tr>
+                  <th>사업자번호</th><th>상호</th><th>수입종류</th><th>업종코드</th>
+                  <th>사업형태</th><th>경비율</th>
+                  <th class="num">수입금액</th>
+                  <th class="num">기준경비율(일반)</th>
+                  <th class="num">단순경비율(일반)</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-businesses"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 최근 3년 신고상황 -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-label">최근 3년 종합소득세 신고상황</span>
+          <span class="badge-sub">(단위: 천원)</span>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table class="data-table history-table" id="table-history">
+              <thead>
+                <tr>
+                  <th>구분</th>
+                  <th class="num" id="yr-0"></th>
+                  <th class="num" id="yr-1"></th>
+                  <th class="num" id="yr-2"></th>
+                </tr>
+              </thead>
+              <tbody id="tbody-history"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 신고소득률 + 판관비 -->
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-label">최근 3년 신고소득률</span>
+            <span class="badge-sub">(단위: 천원)</span>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table class="data-table" id="table-income-rate">
+                <thead>
+                  <tr>
+                    <th>귀속연도</th><th class="num">수입금액</th>
+                    <th class="num">필요경비</th><th class="num">소득금액</th>
+                    <th class="num">소득률</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-income-rate"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-label">판관비율 분석</span>
+            <span class="badge-sub">(단위: 천원)</span>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table class="data-table" id="table-sg">
+                <thead>
+                  <tr>
+                    <th>계정과목</th><th class="num">금액</th>
+                    <th class="num">당해업체</th><th class="num">업종평균</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-sg"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 공제 + 신용카드 -->
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-label">공제 참고자료</span>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table class="data-table" id="table-deductions">
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th class="num">금액</th></tr>
+                </thead>
+                <tbody id="tbody-deductions"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-label">사업용 신용카드 사용현황</span>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table class="data-table" id="table-card">
+                <thead>
+                  <tr><th>구분</th><th class="num">건수</th><th class="num">금액</th></tr>
+                </thead>
+                <tbody id="tbody-card"></tbody>
+              </table>
+            </div>
+            <div id="card-chart" class="card-chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 타소득 + 가산세 -->
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-label">타소득 자료유무</span></div>
+          <div class="card-body">
+            <div id="other-income-chips" class="chips"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-label">가산세 항목</span></div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table class="data-table" id="table-penalty">
+                <thead>
+                  <tr><th>항목</th><th>구분</th><th class="num">건수/금액</th></tr>
+                </thead>
+                <tbody id="tbody-penalty"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /result-section -->
+  </div><!-- /tab-analyze -->
+
+
+  <!-- ══════════════════ 이력 탭 ══════════════════ -->
+  <div id="tab-history" class="hidden">
+
+    <div class="history-header">
+      <div class="section-title">업로드 이력</div>
+      <button class="btn-refresh" onclick="loadHistory()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13.5 8A5.5 5.5 0 1 1 10 3.07"/><path d="M10 2v3h3"/>
+        </svg>
+        새로고침
+      </button>
+    </div>
+
+    <div id="history-loading" class="loading hidden">
+      <div class="spinner"></div>
+      <div class="loading-text">불러오는 중...</div>
+    </div>
+
+    <div id="history-empty" class="history-empty hidden">
+      <div class="empty-icon-wrap">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <rect width="56" height="56" rx="16" fill="#EEF0FF"/>
+          <path d="M20 38h16M28 18v16M22 26l6-8 6 8" stroke="#5B6CF9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div style="margin-top:16px;font-weight:600;color:#64748B">업로드된 파일이 없습니다.</div>
+      <button class="btn-analyze" style="margin-top:16px;width:auto;padding:0 28px"
+              onclick="switchTab('analyze')">PDF 업로드하기</button>
+    </div>
+
+    <!-- 납세자 목록 -->
+    <div id="history-list" class="history-list"></div>
+
+    <!-- 이력 상세 -->
+    <div id="history-detail" class="hidden">
+
+      <div class="card card-primary">
+        <div class="card-header"><span class="card-label">납세자 기본정보</span></div>
+        <div class="card-body info-grid" id="card-taxpayer-h"></div>
+      </div>
+
+      <div class="card card-ai">
+        <div class="card-header ai-header">
+          <span class="card-label">AI 분석 리포트</span>
+          <span id="ai-risk-badge-h" class="risk-badge risk-medium hidden"></span>
+          <div class="ai-loading" id="ai-loading-h">
+            <div class="spinner-sm"></div> 분석 중...
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="ai-comments" id="ai-comments-h"></div>
+          <div class="ai-note" id="ai-note-h"></div>
+        </div>
+      </div>
+
+      <div class="card card-calc">
+        <div class="card-header calc-header">
+          <span class="card-label">예상 세금 계산</span>
+          <span class="badge-sub">2024년 귀속 기준</span>
+          <div class="calc-loading" id="calc-loading-h">
+            <div class="spinner-sm"></div> 계산 중...
+          </div>
+        </div>
+        <div class="card-body"><div class="calc-steps" id="calc-steps-h"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-label">사업장별 수입금액</span>
+          <span id="biz-total-badge-h" class="badge"></span>
+        </div>
+        <div class="card-body"><div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>사업자번호</th><th>상호</th><th>수입종류</th><th>경비율</th>
+              <th class="num">수입금액</th>
+            </tr></thead>
+            <tbody id="tbody-businesses-h"></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-label">최근 3년 종합소득세 신고상황</span>
+          <span class="badge-sub">(단위: 천원)</span>
+        </div>
+        <div class="card-body"><div class="table-wrap">
+          <table class="data-table history-table">
+            <thead><tr>
+              <th>구분</th>
+              <th class="num" id="yr-0-h"></th>
+              <th class="num" id="yr-1-h"></th>
+              <th class="num" id="yr-2-h"></th>
+            </tr></thead>
+            <tbody id="tbody-history-h"></tbody>
+          </table>
+        </div></div>
+      </div>
+
+    </div><!-- /history-detail -->
+  </div><!-- /tab-history -->
+
+</main>
+
+<!-- ── 바텀 액션 바 ──────────────────────────────────────────── -->
+<div id="action-bar" class="action-bar hidden">
+  <button class="action-btn action-btn-share" onclick="actionShare()">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="15" cy="4" r="2"/><circle cx="15" cy="16" r="2"/><circle cx="5" cy="10" r="2"/>
+      <path d="M13.2 5L6.8 9.1M6.8 10.9l6.4 4.1"/>
+    </svg>
+    링크 공유
+  </button>
+  <button class="action-btn action-btn-excel" onclick="actionExcel()">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 3v10M7 9l3 4 3-4"/><rect x="3" y="14" width="14" height="3" rx="1"/>
+    </svg>
+    엑셀 다운로드
+  </button>
+</div>
+
+<!-- ── 바텀 네비게이션 ─────────────────────────────────────────── -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-item-analyze" onclick="switchTab('analyze')">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 4v12M7 10l4-6 4 6M4 18h14"/>
+    </svg>
+    <span>분석</span>
+  </button>
+  <button class="nav-item" id="nav-item-history" onclick="switchTab('history')">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8.5L13.5 3H7z"/>
+      <path d="M13 3v5.5H17M8 13h6M8 17h4"/>
+    </svg>
+    <span>이력</span>
+  </button>
+</nav>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# 가상환경
+venv/
+.venv/
+env/
+.env/
+
+# 환경변수 (민감정보 — 절대 커밋 금지)
+.env
+.env.local
+.env.production
+*.env
+
+# SQLite DB (서버에서 생성됨)
+taxfree.db
+taxfree.db-shm
+taxfree.db-wal
+
+# 업로드 파일 (임시)
+uploads/
+*.pdf
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 로그
+*.log
+logs/
+
+# 배포 무시
+*.pid
