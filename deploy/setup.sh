@@ -4,8 +4,8 @@
 set -e
 
 APP_DIR="/var/www/byetax"
-REPO_URL="YOUR_GITHUB_REPO_URL"   # ← GitHub URL로 변경
-DOMAIN="YOUR_DOMAIN_OR_IP"        # ← 도메인 또는 IP로 변경
+REPO_URL="https://github.com/seunghoon-choi/morina.git"
+DOMAIN="172.234.89.235"
 
 echo "=== [1/7] 패키지 업데이트 ==="
 apt-get update -y
