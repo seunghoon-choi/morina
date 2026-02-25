@@ -13,14 +13,17 @@ apt-get install -y python3 python3-pip python3-venv nginx git
 
 echo "=== [2/7] 앱 디렉토리 생성 ==="
 mkdir -p "$APP_DIR"
-chown -R www-data:www-data "$APP_DIR"
 
 echo "=== [3/7] 소스 코드 클론 ==="
+# git 소유권 경고 우회 (root로 실행 시 발생)
+git config --global --add safe.directory "$APP_DIR"
 if [ -d "$APP_DIR/.git" ]; then
   cd "$APP_DIR" && git pull
 else
   git clone "$REPO_URL" "$APP_DIR"
 fi
+# 클론 후 소유권 설정
+chown -R www-data:www-data "$APP_DIR"
 
 echo "=== [4/7] Python 가상환경 및 의존성 설치 ==="
 cd "$APP_DIR"
