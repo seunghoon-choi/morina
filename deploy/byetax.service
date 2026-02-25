@@ -1,0 +1,20 @@
+[Unit]
+Description=ByeTax FastAPI Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/byetax/backend
+EnvironmentFile=/var/www/byetax/.env
+
+ExecStart=/var/www/byetax/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8082 --workers 2
+Restart=always
+RestartSec=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=byetax
+
+[Install]
+WantedBy=multi-user.target
