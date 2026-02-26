@@ -788,7 +788,10 @@ body.action-bar-visible .main-content {
   color: var(--gray-400);
   margin-bottom: 12px;
   font-weight: 500;
+  min-width: 0;
 }
+.hist-dt   { flex-shrink: 0; }
+.hist-file { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .hist-actions { display: flex; gap: 8px; }
 .btn-detail {
   flex: 1;
