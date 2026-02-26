@@ -38,8 +38,8 @@
   --action-bar-h:   76px;
 }
 
-html {
-  scrollbar-gutter: stable;
+@supports not (-webkit-touch-callout: none) {
+  html { scrollbar-gutter: stable; }
 }
 
 html, body {
@@ -786,8 +786,9 @@ body.action-bar-visible .main-content {
   margin-bottom: 12px;
   font-weight: 500;
 }
+.hist-actions { display: flex; gap: 8px; }
 .btn-detail {
-  width: 100%;
+  flex: 1;
   height: 44px;
   background: var(--primary-xl);
   color: var(--primary);
@@ -799,6 +800,20 @@ body.action-bar-visible .main-content {
   transition: all .15s;
 }
 .btn-detail:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-delete {
+  width: 52px;
+  height: 44px;
+  background: var(--gray-50);
+  color: var(--gray-400);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.btn-delete:hover { background: var(--danger-l); color: var(--danger); border-color: var(--danger); }
 
 .history-empty {
   text-align: center;

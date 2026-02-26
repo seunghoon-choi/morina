@@ -321,6 +321,16 @@ def get_taxpayer(taxpayer_id: int, current_user: dict = Depends(get_current_user
     return _get_taxpayer_data(taxpayer_id)
 
 
+@app.delete("/taxpayers/{taxpayer_id}", summary="납세자 데이터 삭제")
+def delete_taxpayer(taxpayer_id: int, current_user: dict = Depends(get_current_user)):
+    _check_owner(taxpayer_id, current_user["user_id"])
+    conn = get_conn()
+    conn.execute("DELETE FROM taxpayers WHERE id=?", (taxpayer_id,))
+    conn.commit()
+    conn.close()
+    return {"status": "deleted", "taxpayer_id": taxpayer_id}
+
+
 # ── 세금 자동 계산 ────────────────────────────────────────────────────────────
 
 @app.get("/taxpayers/{taxpayer_id}/calculate", summary="종합소득세 자동 계산")

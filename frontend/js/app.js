@@ -688,13 +688,28 @@ async function loadHistory() {
             <span class="hist-dt">${dt}</span>
             <span class="hist-file">${tp.pdf_filename || '-'}</span>
           </div>
-          <button class="btn-detail">상세 보기</button>
+          <div class="hist-actions">
+            <button class="btn-detail" onclick="event.stopPropagation(); openHistoryDetail(${tp.id})">상세 보기</button>
+            <button class="btn-delete" onclick="event.stopPropagation(); deleteTaxpayer(${tp.id}, '${(tp.name||'').replace(/'/g,"\\'")}')">삭제</button>
+          </div>
         </div>`;
     }).join('');
 
   } catch {
     hide('history-loading');
     show('history-empty');
+  }
+}
+
+async function deleteTaxpayer(id, name) {
+  if (!confirm(`"${name}" 데이터를 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.`)) return;
+  try {
+    const res = await authFetch(`${API}/taxpayers/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('삭제 실패');
+    showToast('삭제되었습니다');
+    loadHistory();
+  } catch (err) {
+    showToast('삭제 오류: ' + err.message);
   }
 }
 
