@@ -44,6 +44,7 @@
 
 html, body {
   height: 100%;
+  overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
                'Pretendard', 'Noto Sans KR', 'Segoe UI', sans-serif;
   background: #F0F4FF;
@@ -749,6 +750,8 @@ body.action-bar-visible .main-content {
   cursor: pointer;
   transition: box-shadow .2s, transform .15s;
   border: 1.5px solid transparent;
+  overflow: hidden;
+  min-width: 0;
 }
 .hist-card:hover {
   box-shadow: var(--shadow-md);
