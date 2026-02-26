@@ -38,7 +38,7 @@
   --action-bar-h:   76px;
 }
 
-@supports not (-webkit-touch-callout: none) {
+@media (min-width: 768px) {
   html { scrollbar-gutter: stable; }
 }
 
