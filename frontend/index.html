@@ -449,6 +449,36 @@
   </button>
 </div>
 
+<!-- ── 공유 모달 (바텀시트) ─────────────────────────────────────── -->
+<div id="share-modal" class="modal-overlay hidden" onclick="closeShareModal(event)">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>링크 공유</h3>
+      <button class="modal-close" onclick="closeShareModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="share-url-box">
+        <input id="share-url-input" type="text" readonly />
+        <button class="share-copy-btn" onclick="copyShareUrl()">복사</button>
+      </div>
+      <div class="share-buttons">
+        <button class="share-btn share-btn-kakao" onclick="shareKakao()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
+          </svg>
+          카카오톡
+        </button>
+        <button class="share-btn share-btn-sms" onclick="shareSMS()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="16" height="13" rx="3"/><path d="M2 7l8 4 8-4"/>
+          </svg>
+          문자
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── 바텀 네비게이션 ─────────────────────────────────────────── -->
 <nav class="bottom-nav">
   <button class="nav-item active" id="nav-item-analyze" onclick="switchTab('analyze')">

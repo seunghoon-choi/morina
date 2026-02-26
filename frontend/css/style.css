@@ -854,6 +854,66 @@ body.share-mode .bottom-nav         { display: none; }
 body.share-mode .action-bar         { display: none !important; }
 body.share-mode .main-content       { padding-bottom: 40px; }
 
+/* ── 공유 모달 (바텀시트) ─────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 10000;
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: fadeIn .2s;
+}
+.modal-card {
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 480px;
+  padding: 24px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  animation: slideUp .25s ease-out;
+}
+@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px;
+}
+.modal-header h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0; }
+.modal-close {
+  background: none; border: none;
+  font-size: 26px; line-height: 1;
+  color: var(--gray-400); cursor: pointer; padding: 0 4px;
+}
+
+.share-url-box { display: flex; gap: 8px; margin-bottom: 20px; }
+.share-url-box input {
+  flex: 1; padding: 12px 14px;
+  border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--gray-500); background: var(--gray-50);
+  outline: none; min-width: 0;
+}
+.share-copy-btn {
+  padding: 12px 20px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-weight: 700; font-size: 13px;
+  cursor: pointer; white-space: nowrap;
+  transition: opacity .15s;
+}
+.share-copy-btn:active { opacity: .8; }
+
+.share-buttons { display: flex; gap: 10px; }
+.share-btn {
+  flex: 1; height: 52px;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .15s;
+}
+.share-btn:active { opacity: .8; }
+.share-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+.share-btn-kakao { background: #FEE500; color: #191919; }
+.share-btn-sms   { background: var(--gray-100); color: var(--navy); }
+
 /* ── 유틸 ───────────────────────────────────────────────────── */
 .hidden  { display: none !important; }
 .amount  { font-variant-numeric: tabular-nums; }

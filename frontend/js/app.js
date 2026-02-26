@@ -536,16 +536,43 @@ async function createShareLink(id) {
     if (!res.ok) throw new Error('공유 링크 생성 실패');
     const data     = await res.json();
     const shareUrl = `${window.location.origin}${window.location.pathname}?share=${data.token}`;
-
-    if (navigator.share) {
-      await navigator.share({ title: 'ByeTax 분석 결과', url: shareUrl });
-    } else {
-      await copyToClipboard(shareUrl);
-      showToast('링크가 클립보드에 복사되었습니다');
-    }
+    openShareModal(shareUrl);
   } catch (err) {
-    if (err.name !== 'AbortError') showToast('공유 오류: ' + err.message);
+    showToast('공유 오류: ' + err.message);
   }
+}
+
+function openShareModal(url) {
+  $('share-url-input').value = url;
+  show('share-modal');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShareModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  hide('share-modal');
+  document.body.style.overflow = '';
+}
+
+async function copyShareUrl() {
+  const url = $('share-url-input').value;
+  await copyToClipboard(url);
+  showToast('링크가 클립보드에 복사되었습니다');
+  closeShareModal();
+}
+
+function shareKakao() {
+  const url = $('share-url-input').value;
+  window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(url)}`;
+  setTimeout(() => closeShareModal(), 500);
+}
+
+function shareSMS() {
+  const url = $('share-url-input').value;
+  const body = `ByeTax 분석 결과를 확인해 보세요: ${url}`;
+  const sep = /iPhone|iPad/i.test(navigator.userAgent) ? '&' : '?';
+  window.location.href = `sms:${sep}body=${encodeURIComponent(body)}`;
+  setTimeout(() => closeShareModal(), 500);
 }
 
 async function copyToClipboard(text) {
