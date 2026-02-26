@@ -1034,6 +1034,46 @@ body.share-mode .main-content       { padding-bottom: 40px; }
 }
 .btn-logout:hover { background: var(--gray-200); color: var(--danger); }
 
+/* ── 모바일: 테이블 → 카드형 변환 ────────────────────────────── */
+@media (max-width: 640px) {
+  .data-table.responsive-card thead { display: none; }
+  .data-table.responsive-card,
+  .data-table.responsive-card tbody,
+  .data-table.responsive-card tr,
+  .data-table.responsive-card td {
+    display: block; width: 100%;
+  }
+  .data-table.responsive-card tr {
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--gray-200);
+  }
+  .data-table.responsive-card tr:hover td { background: transparent; }
+  .data-table.responsive-card td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--gray-100);
+    text-align: right;
+  }
+  .data-table.responsive-card td:last-child { border-bottom: none; }
+  .data-table.responsive-card td::before {
+    content: attr(data-label);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+  .data-table.responsive-card td.num {
+    text-align: right;
+  }
+}
+
 /* ── 모바일 보정 ─────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .main-content    { padding-left: 12px; padding-right: 12px; }

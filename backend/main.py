@@ -11,7 +11,7 @@ from urllib.parse import quote
 
 from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
@@ -35,6 +35,16 @@ FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
 UPLOAD_DIR   = os.path.join(os.path.dirname(__file__), "..", "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
+def _asset_version() -> str:
+    """정적 파일 mtime 기반 캐시 버스팅 버전"""
+    try:
+        css = os.path.getmtime(os.path.join(FRONTEND_DIR, "css", "style.css"))
+        js  = os.path.getmtime(os.path.join(FRONTEND_DIR, "js", "app.js"))
+        return str(int(max(css, js)))
+    except OSError:
+        return "1"
+
 app = FastAPI(title="ByeTax API", version="0.2.0")
 
 app.add_middleware(
@@ -55,7 +65,13 @@ app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 @app.get("/", include_in_schema=False)
 def serve_index():
-    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+    html_path = os.path.join(FRONTEND_DIR, "index.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        html = f.read()
+    v = _asset_version()
+    html = html.replace("style.css\"", f"style.css?v={v}\"")
+    html = html.replace("app.js\"", f"app.js?v={v}\"")
+    return HTMLResponse(html)
 
 
 # ── 인증 (카카오 소셜 로그인) ─────────────────────────────────────────────────

@@ -293,22 +293,22 @@ function renderBusinesses(list, suffix = '') {
   const isShort = suffix === '-h';
   tbody.innerHTML = list.map(b => isShort ? `
     <tr>
-      <td><code style="font-size:12px">${b.business_reg_no || '-'}</code></td>
-      <td style="font-weight:600">${b.business_name || '-'}</td>
-      <td>${b.income_type_code || '-'}</td>
-      <td>${b.expense_rate_type || '-'}</td>
-      <td class="num" style="color:#1d4ed8;font-weight:700">${fmt(b.revenue)}</td>
+      <td data-label="사업자번호"><code style="font-size:12px">${b.business_reg_no || '-'}</code></td>
+      <td data-label="상호" style="font-weight:600">${b.business_name || '-'}</td>
+      <td data-label="수입종류">${b.income_type_code || '-'}</td>
+      <td data-label="경비율">${b.expense_rate_type || '-'}</td>
+      <td data-label="수입금액" class="num" style="color:#1d4ed8;font-weight:700">${fmt(b.revenue)}</td>
     </tr>` : `
     <tr>
-      <td><code style="font-size:12px">${b.business_reg_no || '-'}</code></td>
-      <td style="font-weight:600">${b.business_name || '-'}</td>
-      <td>${b.income_type_code || '-'}</td>
-      <td>${b.industry_code || '-'}</td>
-      <td><span class="chip chip-none" style="padding:3px 8px;font-size:12px">${b.business_type || '-'}</span></td>
-      <td>${b.expense_rate_type || '-'}</td>
-      <td class="num" style="color:#1d4ed8;font-size:15px">${fmt(b.revenue)}</td>
-      <td class="num">${fmtPct(b.std_expense_rate_general)}</td>
-      <td class="num">${fmtPct(b.simple_expense_rate_general)}</td>
+      <td data-label="사업자번호"><code style="font-size:12px">${b.business_reg_no || '-'}</code></td>
+      <td data-label="상호" style="font-weight:600">${b.business_name || '-'}</td>
+      <td data-label="수입종류">${b.income_type_code || '-'}</td>
+      <td data-label="업종코드">${b.industry_code || '-'}</td>
+      <td data-label="사업형태"><span class="chip chip-none" style="padding:3px 8px;font-size:12px">${b.business_type || '-'}</span></td>
+      <td data-label="경비율">${b.expense_rate_type || '-'}</td>
+      <td data-label="수입금액" class="num" style="color:#1d4ed8;font-size:15px">${fmt(b.revenue)}</td>
+      <td data-label="기준경비율" class="num">${fmtPct(b.std_expense_rate_general)}</td>
+      <td data-label="단순경비율" class="num">${fmtPct(b.simple_expense_rate_general)}</td>
     </tr>`
   ).join('');
 }
