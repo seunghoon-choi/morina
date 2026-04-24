@@ -2,65 +2,240 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>ByeTax - 간편 세금 계산</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#5B6CF9" />
+  <title>ByeTax · 사장님의 세무 비서 세비</title>
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
 
-<!-- ── 로그인 화면 (인증 없을 때 전체 오버레이) ─────────────────── -->
-<div id="login-screen" class="login-screen">
-  <div class="login-box">
-    <div class="login-logo-wrap">
-      <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-        <rect width="72" height="72" rx="22" fill="#EEF0FF"/>
-        <path d="M22 54h28M36 18v26M29 26l7-8 7 8" stroke="#5B6CF9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="login-app-name">ByeTax</div>
-    <div class="login-app-desc">소득세 신고도움 서비스</div>
+<!-- ══════════════════════════════════════════════════════════════
+     스플래시 화면 (첫 진입 시)
+     ══════════════════════════════════════════════════════════════ -->
+<div id="splash-screen" class="splash-screen">
+  <span class="splash-version">v1.0</span>
 
-    <button class="btn-kakao" onclick="kakaoLogin()">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+  <!-- 배경 장식 -->
+  <span class="splash-deco cloud-1"></span>
+  <span class="splash-deco cloud-2"></span>
+  <span class="splash-deco sparkle s1">✦</span>
+  <span class="splash-deco sparkle s2">✦</span>
+  <span class="splash-deco sparkle s3">✦</span>
+
+  <!-- 작은 로고 마크 -->
+  <svg class="splash-logo-mark" viewBox="0 0 32 32" fill="none">
+    <path d="M16 4c-4 4-4 10 0 14 4-4 4-10 0-14z" fill="#4AB8E8"/>
+    <circle cx="16" cy="22" r="3" fill="#2A9FD4"/>
+  </svg>
+
+  <!-- 브랜드 타이틀 -->
+  <div class="splash-brand-title">Bye<em>Tax</em></div>
+  <div class="splash-brand-sub">바이택스</div>
+
+  <!-- 세비 캐릭터 -->
+  <img src="/static/assets/sevi/splash.png" alt="세비"
+       class="splash-sevi" onerror="this.style.display='none'"/>
+
+  <!-- 캐치 -->
+  <div class="splash-caption">
+    세비와 함께하는<br/>
+    <b>세무건강진단 플랫폼</b>
+  </div>
+
+  <div class="splash-footer">Powered by ByeTax · 사장님의 세무비서</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     온보딩 (3 슬라이드)
+     ══════════════════════════════════════════════════════════════ -->
+<div id="onboarding-screen" class="overlay-screen hidden">
+  <div class="overlay-brand">
+    <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+      <path d="M16 4c-4 4-4 10 0 14 4-4 4-10 0-14z" fill="#4AB8E8"/>
+      <circle cx="16" cy="22" r="3" fill="#2A9FD4"/>
+    </svg>
+    <span class="brand-name">Sevi</span>
+  </div>
+
+  <div class="onboarding-viewport">
+    <div id="onboarding-track" class="onboarding-track">
+      <!-- Slide 1 -->
+      <div class="onboarding-slide">
+        <img src="/static/assets/sevi/splash.png" alt="세비" class="onboarding-sevi"
+             onerror="this.style.display='none'"/>
+        <div class="onboarding-title">카카오로 간편하게 시작</div>
+        <div class="onboarding-desc">
+          복잡한 절차 없이 바로 내 세무 상태를<br/>확인할 수 있어요
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="onboarding-slide">
+        <img src="/static/assets/sevi/thinking.png" alt="세비" class="onboarding-sevi smaller"
+             onerror="this.style.display='none'"/>
+        <div class="onboarding-title">1분이면 <b>세무 건강검진</b> 끝</div>
+        <div class="onboarding-desc">
+          홈택스 PDF 한 장만 올리면<br/>
+          세비가 꼼꼼히 진단해 드려요
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="onboarding-slide">
+        <img src="/static/assets/sevi/alert.png" alt="세비" class="onboarding-sevi smaller"
+             onerror="this.style.display='none'"/>
+        <div class="onboarding-title">중요한 <b>세무 일정</b>도 놓치지 않게</div>
+        <div class="onboarding-desc">
+          신고·납부 D-day 알림으로<br/>
+          가산세 걱정 없이 관리해요
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="onboarding-dots">
+    <span class="dot active" data-index="0"></span>
+    <span class="dot" data-index="1"></span>
+    <span class="dot" data-index="2"></span>
+  </div>
+
+  <div class="onboarding-bottom">
+    <button class="btn-skip" onclick="skipOnboarding()">건너뛰기</button>
+    <button id="btn-onboarding-next" class="btn-next" onclick="nextOnboardingSlide()">
+      다음
+    </button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     로그인 화면 (인증 없을 때 전체 오버레이)
+     ══════════════════════════════════════════════════════════════ -->
+<div id="login-screen" class="login-screen">
+  <div class="login-top overlay-brand">
+    <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+      <path d="M16 4c-4 4-4 10 0 14 4-4 4-10 0-14z" fill="#4AB8E8"/>
+      <circle cx="16" cy="22" r="3" fill="#2A9FD4"/>
+    </svg>
+    <span class="brand-name">Sevi</span>
+  </div>
+
+  <div class="login-main">
+    <!-- 세비 말풍선 -->
+    <div class="login-bubble-wrap">
+      <div class="login-bubble">제가 처음부터<br/>같이 도와드릴게요</div>
+    </div>
+
+    <img src="/static/assets/sevi/splash.png" alt="세비" class="login-sevi"
+         onerror="this.style.display='none'"/>
+
+    <div class="login-title">
+      <b>3분 만에</b><br/>세무 건강 확인하기
+    </div>
+    <div class="login-desc">카카오로 간편하게 시작하세요</div>
+  </div>
+
+  <div class="login-bottom">
+    <button class="btn-kakao" onclick="kakaoLogin()" title="카카오 로그인(준비중)">
+      <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
       </svg>
-      카카오로 로그인
+      카카오로 시작하기
     </button>
 
     <button id="btn-dev-login" class="btn-dev-login" onclick="devLogin()">
       개발용: 테스트 로그인
     </button>
+
+    <div class="login-terms">
+      로그인 시 <a href="#" onclick="event.preventDefault()">이용약관</a> 및
+      <a href="#" onclick="event.preventDefault()">개인정보처리방침</a>에<br/>
+      동의한 것으로 간주됩니다
+    </div>
   </div>
 </div>
 
-<!-- ── 앱 헤더 ────────────────────────────────────────────────── -->
-<header class="app-header">
+
+<!-- ══════════════════════════════════════════════════════════════
+     구독 가입 Lock 오버레이 (밀착관리/원천세/보관함 진입 시)
+     ══════════════════════════════════════════════════════════════ -->
+<div id="paywall-overlay" class="paywall-overlay hidden" onclick="closePaywall(event)">
+  <div class="paywall-sheet" onclick="event.stopPropagation()">
+    <button class="paywall-close" onclick="closePaywall()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 5l10 10M15 5L5 15"/>
+      </svg>
+    </button>
+
+    <img src="/static/assets/sevi/thinking.png" alt="세비"
+         class="paywall-sevi" onerror="this.style.display='none'"/>
+
+    <div class="paywall-lock-badge">🔒 회원 전용</div>
+    <div class="paywall-title" id="paywall-title">세무 밀착관리는 회원 전용이에요</div>
+    <div class="paywall-desc" id="paywall-desc">
+      카카오로 가입하면<br/>
+      <b>밀착관리·원천세·보관함</b>까지 모두 이용할 수 있어요
+    </div>
+
+    <ul class="paywall-benefits">
+      <li>🎯 매출·매입·경비 종합 관리</li>
+      <li>📊 실시간 예상세액 계산</li>
+      <li>🔔 신고 D-day 알림톡</li>
+      <li>📁 5년치 자료 보관</li>
+    </ul>
+
+    <button class="btn-kakao paywall-kakao" onclick="kakaoLoginFromPaywall()">
+      <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
+      </svg>
+      카카오로 3초 만에 가입하기
+    </button>
+
+    <button class="paywall-later" onclick="closePaywall()">나중에 할게요</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     모바일 앱 헤더 (라우트별 타이틀 표시)
+     ══════════════════════════════════════════════════════════════ -->
+<header class="app-header" id="app-header">
   <div class="header-inner">
-    <button id="btn-header-back" class="btn-header-back hidden" onclick="handleBack()">
+    <button id="btn-header-back" class="btn-header-back hidden" onclick="goBack()">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14 5l-6 6 6 6"/>
       </svg>
     </button>
-    <div id="logo-area" class="logo-area" onclick="resetUI()">
+    <div id="logo-area" class="logo-area">
       <span class="logo-text">ByeTax</span>
+      <span class="logo-sub">사장님의 세무비서 세비</span>
     </div>
     <h1 id="header-page-title" class="header-page-title hidden"></h1>
-    <div class="header-spacer"></div>
-    <div id="user-area" class="user-area hidden">
-      <img id="user-avatar" class="user-avatar" src="" alt="" />
-      <span id="user-name" class="user-name"></span>
-      <button class="btn-logout" onclick="logout()">로그아웃</button>
+    <div class="header-actions">
+      <button class="icon-btn" id="btn-bell" title="알림" onclick="route('/notifications')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button>
     </div>
   </div>
 </header>
 
-<!-- ── 토스트 ─────────────────────────────────────────────────── -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     토스트 / 공유 배너
+     ══════════════════════════════════════════════════════════════ -->
 <div id="toast" class="toast hidden"></div>
 
-<!-- ── 메인 콘텐츠 ────────────────────────────────────────────── -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     메인 콘텐츠 (라우트별 화면 표시)
+     ══════════════════════════════════════════════════════════════ -->
 <main class="main-content">
 
-  <!-- 공유 배너 -->
+  <!-- ────────── 공유 배너 / 공유 오류 ────────── -->
   <div id="share-banner" class="share-banner hidden">
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 10v3a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3M8 10V3M5 6l3-3 3 3"/>
@@ -68,7 +243,6 @@
     공유된 분석 결과 · 유효기간 7일
   </div>
 
-  <!-- 공유 오류 -->
   <div id="share-error" class="share-error hidden">
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
       <rect width="48" height="48" rx="12" fill="#FEE2E2"/>
@@ -78,423 +252,567 @@
     <div id="share-error-msg" style="margin-top:6px;font-size:13px;color:#94A3B8"></div>
   </div>
 
-  <!-- ══════════════════ 분석 탭 ══════════════════ -->
-  <div id="tab-analyze">
+  <!-- ══════════════ [/] 홈 Today ══════════════ -->
+  <section id="page-home" class="page page-home hidden">
 
-    <!-- 업로드 섹션 -->
-    <section id="upload-section" class="upload-section">
-      <div class="upload-hero">
-        <div class="upload-hero-icon">
-          <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-            <rect width="72" height="72" rx="22" fill="#EEF0FF"/>
-            <path d="M22 54h28M36 18v26M29 26l7-8 7 8" stroke="#5B6CF9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- 세비 인사 + 세무건강도 카드 -->
+    <div class="hero-card">
+      <div class="hero-greet">
+        <img src="/static/assets/sevi/expressions.png" alt="세비"
+             class="hero-sevi" onerror="this.style.display='none'"/>
+        <div class="hero-text">
+          <div class="hero-hi" id="hero-greeting">안녕하세요, 사장님! 👋</div>
+          <div class="hero-sub">오늘도 세비가 옆에서 챙겨드릴게요</div>
+        </div>
+      </div>
+
+      <div class="health-card">
+        <div class="health-head">
+          <span class="health-label">세무건강도</span>
+          <span class="health-badge" id="health-badge">주의</span>
+        </div>
+        <div class="health-gauge-wrap">
+          <img src="/static/assets/sevi/potato-states.png"
+               alt="감자 게이지" class="health-potato"
+               onerror="this.style.display='none'"/>
+          <div class="health-score">
+            <span id="health-score-num">72</span><span class="health-unit">점</span>
+          </div>
+        </div>
+        <div class="health-bar">
+          <div class="health-bar-fill" id="health-bar-fill" style="width:72%"></div>
+        </div>
+        <div class="health-legend">
+          <span class="legend safe">안전 80~</span>
+          <span class="legend warn">주의 50~79</span>
+          <span class="legend danger">위험 ~49</span>
+        </div>
+        <button class="btn-ghost-full" onclick="route('/diagnosis-history')">
+          진단 내역 보기
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 5l5 5-5 5"/>
           </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 이번달 세무 일정 -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">이번달 세무 일정</h2>
+        <button class="section-more" onclick="route('/calendar')">전체보기</button>
+      </div>
+      <div class="schedule-grid">
+        <div class="schedule-chip" onclick="route('/vat')">
+          <div class="schedule-chip-label">부가세</div>
+          <div class="schedule-chip-dday">D-20</div>
+          <div class="schedule-chip-date">5/25</div>
         </div>
-        <div class="upload-hero-title">소득세 PDF 업로드</div>
-        <div class="upload-hero-desc">국세청 소득세 신고도움서비스 PDF를 업로드하면<br>자동으로 분석하고 세금을 계산합니다</div>
-      </div>
-
-      <div id="drop-zone" class="drop-zone">
-        <input type="file" id="pdf-input" accept=".pdf" class="file-input" />
-        <div class="drop-zone-inner">
-          <div class="drop-text">PDF 파일을 여기에 끌어다 놓거나</div>
-          <button class="btn-upload" onclick="document.getElementById('pdf-input').click()">
-            파일 선택하기
-          </button>
-          <div class="drop-hint">소득세 신고도움서비스 PDF만 지원합니다</div>
+        <div class="schedule-chip urgent" onclick="route('/withholding')">
+          <div class="schedule-chip-label">원천세</div>
+          <div class="schedule-chip-dday">D-5</div>
+          <div class="schedule-chip-date">5/10</div>
+        </div>
+        <div class="schedule-chip" onclick="route('/payroll-detail')">
+          <div class="schedule-chip-label">간이지급명세서</div>
+          <div class="schedule-chip-dday">D-25</div>
+          <div class="schedule-chip-date">5/31</div>
         </div>
       </div>
-
-      <div id="file-info" class="file-info hidden">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <rect width="18" height="18" rx="4" fill="#EEF0FF"/>
-          <path d="M5 9l3 3 5-5" stroke="#5B6CF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span id="file-name-text"></span>
-        <button class="btn-remove" onclick="clearFile()">✕</button>
-      </div>
-
-      <button id="btn-analyze" class="btn-analyze hidden" onclick="uploadPDF()">
-        분석 시작
-      </button>
     </section>
 
-    <!-- 로딩 -->
+    <!-- 1분 세무진단 CTA -->
+    <section class="section">
+      <div class="quick-check-card" onclick="route('/quick-check')">
+        <div class="quick-check-left">
+          <div class="qc-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5B6CF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/>
+            </svg>
+          </div>
+          <div>
+            <div class="qc-title">1분 세무 진단</div>
+            <div class="qc-desc">PDF만 올리면 즉시 진단</div>
+          </div>
+        </div>
+        <div class="qc-badge">무료</div>
+      </div>
+    </section>
+
+    <!-- 이달의 세무 팁 -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">이달의 세무팁</h2>
+        <span class="section-sub" id="tip-industry">업종: 음식점</span>
+      </div>
+      <div class="tip-card">
+        <div class="tip-badge">#의제매입세액</div>
+        <div class="tip-title">농산물 매입이 있다면, 공제 놓치지 마세요</div>
+        <div class="tip-body">
+          음식점은 면세 농산물 매입 시 공급가액의 <b>8/108</b>을 부가세에서 공제받을 수 있어요.
+          세금계산서가 없어도 계산서/영수증이면 인정됩니다.
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-badge">#현금지출</div>
+        <div class="tip-title">현금지출 영수증, 이렇게 관리하세요</div>
+        <div class="tip-body">
+          현금으로 지출한 경비는 <b>3만원 초과</b>면 세금계산서·현금영수증·카드 중 하나가 필수.
+          월말마다 정리하면 연말에 편해져요.
+        </div>
+      </div>
+    </section>
+
+  </section>
+
+  <!-- ══════════════ [/diagnosis] 진단 허브 ══════════════ -->
+  <section id="page-diagnosis" class="page page-diagnosis hidden">
+    <div class="page-intro">
+      <img src="/static/assets/sevi/thinking.png" alt="세비"
+           class="page-intro-sevi" onerror="this.style.display='none'"/>
+      <div>
+        <div class="page-intro-title">어떤 진단이 필요하세요?</div>
+        <div class="page-intro-sub">세비가 단계별로 도와드려요</div>
+      </div>
+    </div>
+
+    <div class="diag-list">
+      <!-- 1분 기초검진 -->
+      <a class="diag-item" onclick="route('/quick-check')">
+        <div class="diag-item-icon bg-primary-l">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B6CF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="diag-item-body">
+          <div class="diag-item-title">1분 세무기초검진</div>
+          <div class="diag-item-desc">PDF 한 장으로 작년 신고상황 진단</div>
+        </div>
+        <span class="pill pill-free">무료</span>
+      </a>
+
+      <!-- 세무 밀착관리 -->
+      <a class="diag-item" onclick="route('/deep-care')">
+        <div class="diag-item-icon bg-warn-l">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <div class="diag-item-body">
+          <div class="diag-item-title">세무 밀착관리</div>
+          <div class="diag-item-desc">매입·경비·예상세액까지 종합 관리</div>
+        </div>
+        <span class="pill pill-lock">🔒 구독</span>
+      </a>
+
+      <!-- 인건비·원천세 -->
+      <a class="diag-item" onclick="route('/withholding')">
+        <div class="diag-item-icon bg-info-l">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="diag-item-body">
+          <div class="diag-item-title">인건비·원천세 신고</div>
+          <div class="diag-item-desc">직원 등록부터 홈택스 제출 가이드까지</div>
+        </div>
+        <span class="pill pill-lock">🔒 구독</span>
+      </a>
+
+      <!-- 진단 내역 -->
+      <a class="diag-item" onclick="route('/diagnosis-history')">
+        <div class="diag-item-icon bg-gray-l">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="diag-item-body">
+          <div class="diag-item-title">진단 내역</div>
+          <div class="diag-item-desc">이전에 받은 진단 결과 모아보기</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 5l5 5-5 5"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ══════════════ [/quick-check] 1분 세무기초검진 ══════════════ -->
+  <section id="page-quick-check" class="page page-quick-check hidden">
+
+    <!-- 상단 세비 안내 -->
+    <div class="guide-hero">
+      <img src="/static/assets/sevi/thinking.png" alt="세비" class="guide-sevi"
+           onerror="this.style.display='none'"/>
+      <div class="guide-bubble">
+        이곳에 준비된 서류를 <b>(PDF)</b> 드래그하여 불러오세요.<br/>
+        <span class="guide-sub">· 종합소득세 신고도움서비스</span>
+      </div>
+    </div>
+
+    <!-- 홈택스 가이드 접힘 -->
+    <details class="guide-hometax">
+      <summary>홈택스에서 어떻게 다운받나요?</summary>
+      <ol class="guide-steps">
+        <li>PC 브라우저에서 <a href="https://hometax.go.kr" target="_blank" rel="noopener">https://hometax.go.kr</a> 접속</li>
+        <li>공동인증/간편인증 로그인</li>
+        <li>세금신고 &gt; 종합소득세 &gt; 신고도움서비스 클릭</li>
+        <li>나의 신고도움 자료를 <b>PDF로 저장</b></li>
+      </ol>
+    </details>
+
+    <!-- 업로드 존 -->
+    <div id="drop-zone" class="drop-zone">
+      <input type="file" id="pdf-input" accept=".pdf" class="file-input" />
+      <div class="drop-zone-inner">
+        <div class="drop-icon">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#5B6CF9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/>
+          </svg>
+        </div>
+        <div class="drop-text">PDF 파일을 여기에 끌어다 놓거나</div>
+        <button class="btn-upload" onclick="document.getElementById('pdf-input').click()">
+          파일 선택하기
+        </button>
+        <div class="drop-hint">소득세 신고도움서비스 PDF만 지원합니다</div>
+      </div>
+    </div>
+
+    <div id="file-info" class="file-info hidden">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <rect width="18" height="18" rx="4" fill="#EEF0FF"/>
+        <path d="M5 9l3 3 5-5" stroke="#5B6CF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span id="file-name-text"></span>
+      <button class="btn-remove" onclick="clearFile()">✕</button>
+    </div>
+
+    <button id="btn-analyze" class="btn-primary-full hidden" onclick="uploadPDF()">
+      분석 시작
+    </button>
+
     <div id="loading" class="loading hidden">
       <div class="spinner"></div>
       <div class="loading-text">PDF 분석 중...</div>
-      <div class="loading-sub">잠시만 기다려 주세요</div>
+      <div class="loading-sub">세비가 꼼꼼히 살펴보고 있어요</div>
     </div>
 
-    <!-- 에러 -->
     <div id="error-box" class="error-box hidden">
       <span id="error-msg"></span>
-      <button class="btn-retry" onclick="resetUI()">다시 시도</button>
+      <button class="btn-retry" onclick="resetQuickCheck()">다시 시도</button>
     </div>
 
-    <!-- 결과 섹션 -->
-    <div id="result-section" class="result-section hidden">
+  </section>
 
-      <!-- 납세자 기본정보 -->
-      <div class="card card-primary">
-        <div class="card-header">
-          <span class="card-label">납세자 기본정보</span>
-        </div>
-        <div class="card-body info-grid" id="card-taxpayer"></div>
-      </div>
 
-      <!-- AI 분석 -->
-      <div class="card card-ai" id="card-ai-wrap">
-        <div class="card-header ai-header">
-          <span class="card-label">AI 분석 리포트</span>
-          <span id="ai-risk-badge" class="risk-badge risk-medium hidden"></span>
-          <div class="ai-loading" id="ai-loading">
-            <div class="spinner-sm"></div> 분석 중...
-          </div>
-        </div>
-        <div class="card-body" id="ai-body">
-          <div class="ai-comments" id="ai-comments"></div>
-          <div class="ai-note" id="ai-note"></div>
-        </div>
-      </div>
+  <!-- ══════════════ [/result] 진단 리포트 ══════════════ -->
+  <section id="page-result" class="page page-result hidden">
 
-      <!-- 세금 계산 -->
-      <div class="card card-calc" id="card-calc-wrap">
-        <div class="card-header calc-header">
-          <span class="card-label">예상 세금 계산</span>
-          <span class="badge-sub">2024년 귀속 기준</span>
-          <div class="calc-loading" id="calc-loading">
-            <div class="spinner-sm"></div> 계산 중...
-          </div>
+    <!-- 총평 카드 -->
+    <div class="report-summary-card">
+      <div class="report-score-wrap">
+        <div class="report-score-ring">
+          <svg viewBox="0 0 120 120" class="score-svg">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#EEF0FF" stroke-width="10"/>
+            <circle id="score-ring-fg" cx="60" cy="60" r="52" fill="none" stroke="#5B6CF9"
+                    stroke-width="10" stroke-linecap="round"
+                    stroke-dasharray="326.7" stroke-dashoffset="98"
+                    transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="score-num"><span id="score-num">85</span><span class="score-unit">점</span></div>
         </div>
-        <div class="card-body" id="calc-body">
-          <div class="calc-steps" id="calc-steps"></div>
-        </div>
-      </div>
-
-      <!-- 사업장별 수입금액 -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">사업장별 수입금액</span>
-          <span id="biz-total-badge" class="badge"></span>
-        </div>
-        <div class="card-body">
-          <div class="table-wrap">
-            <table class="data-table responsive-card" id="table-businesses">
-              <thead>
-                <tr>
-                  <th>사업자번호</th><th>상호</th><th>수입종류</th><th>업종코드</th>
-                  <th>사업형태</th><th>경비율</th>
-                  <th class="num">수입금액</th>
-                  <th class="num">기준경비율(일반)</th>
-                  <th class="num">단순경비율(일반)</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-businesses"></tbody>
-            </table>
+        <div class="report-score-info">
+          <div class="report-title">세무기초검진 리포트</div>
+          <div class="report-sub" id="report-industry">업종: 음식점</div>
+          <div class="report-sevi-line">
+            <img src="/static/assets/sevi/expressions.png" alt="세비" class="sevi-inline"
+                 onerror="this.style.display='none'"/>
+            <span id="report-sevi-msg">전반적으로 양호해요! 몇 가지만 챙기면 완벽합니다.</span>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 최근 3년 신고상황 -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">최근 3년 종합소득세 신고상황</span>
-          <span class="badge-sub">(단위: 천원)</span>
-        </div>
-        <div class="card-body">
-          <div class="table-wrap">
-            <table class="data-table history-table" id="table-history">
-              <thead>
-                <tr>
-                  <th>구분</th>
-                  <th class="num" id="yr-0"></th>
-                  <th class="num" id="yr-1"></th>
-                  <th class="num" id="yr-2"></th>
-                </tr>
-              </thead>
-              <tbody id="tbody-history"></tbody>
-            </table>
-          </div>
+    <!-- 납세자 기본정보 -->
+    <div class="card">
+      <div class="card-header"><span class="card-label">납세자 기본정보</span></div>
+      <div class="card-body info-grid" id="card-taxpayer"></div>
+    </div>
+
+    <!-- AI 분석 -->
+    <div class="card card-ai">
+      <div class="card-header ai-header">
+        <span class="card-label">AI 분석 리포트</span>
+        <span id="ai-risk-badge" class="risk-badge risk-medium hidden"></span>
+        <div class="ai-loading" id="ai-loading">
+          <div class="spinner-sm"></div> 분석 중...
         </div>
       </div>
+      <div class="card-body" id="ai-body">
+        <div class="ai-comments" id="ai-comments"></div>
+        <div class="ai-note" id="ai-note"></div>
+      </div>
+    </div>
 
-      <!-- 신고소득률 + 판관비 -->
-      <div class="two-col">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-label">최근 3년 신고소득률</span>
-            <span class="badge-sub">(단위: 천원)</span>
-          </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table class="data-table" id="table-income-rate">
-                <thead>
-                  <tr>
-                    <th>귀속연도</th><th class="num">수입금액</th>
-                    <th class="num">필요경비</th><th class="num">소득금액</th>
-                    <th class="num">소득률</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody-income-rate"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-label">판관비율 분석</span>
-            <span class="badge-sub">(단위: 천원)</span>
-          </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table class="data-table" id="table-sg">
-                <thead>
-                  <tr>
-                    <th>계정과목</th><th class="num">금액</th>
-                    <th class="num">당해업체</th><th class="num">업종평균</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody-sg"></tbody>
-              </table>
-            </div>
-          </div>
+    <!-- 예상 세금 -->
+    <div class="card card-calc">
+      <div class="card-header calc-header">
+        <span class="card-label">예상 세금 계산</span>
+        <span class="badge-sub">2024년 귀속 기준</span>
+        <div class="calc-loading" id="calc-loading">
+          <div class="spinner-sm"></div> 계산 중...
         </div>
       </div>
+      <div class="card-body" id="calc-body">
+        <div class="calc-steps" id="calc-steps"></div>
+      </div>
+    </div>
 
-      <!-- 공제 + 신용카드 -->
-      <div class="two-col">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-label">공제 참고자료</span>
-          </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table class="data-table" id="table-deductions">
-                <thead>
-                  <tr><th>구분</th><th>항목</th><th class="num">금액</th></tr>
-                </thead>
-                <tbody id="tbody-deductions"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-label">사업용 신용카드 사용현황</span>
-          </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table class="data-table" id="table-card">
-                <thead>
-                  <tr><th>구분</th><th class="num">건수</th><th class="num">금액</th></tr>
-                </thead>
-                <tbody id="tbody-card"></tbody>
-              </table>
-            </div>
-            <div id="card-chart" class="card-chart"></div>
-          </div>
+    <!-- 사업장별 수입금액 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label">사업장별 수입금액</span>
+        <span id="biz-total-badge" class="badge"></span>
+      </div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table class="data-table responsive-card" id="table-businesses">
+            <thead>
+              <tr>
+                <th>사업자번호</th><th>상호</th><th>수입종류</th><th>업종코드</th>
+                <th>사업형태</th><th>경비율</th>
+                <th class="num">수입금액</th>
+                <th class="num">기준경비율(일반)</th>
+                <th class="num">단순경비율(일반)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-businesses"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- 타소득 + 가산세 -->
-      <div class="two-col">
-        <div class="card">
-          <div class="card-header"><span class="card-label">타소득 자료유무</span></div>
-          <div class="card-body">
-            <div id="other-income-chips" class="chips"></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header"><span class="card-label">가산세 항목</span></div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table class="data-table" id="table-penalty">
-                <thead>
-                  <tr><th>항목</th><th>구분</th><th class="num">건수/금액</th></tr>
-                </thead>
-                <tbody id="tbody-penalty"></tbody>
-              </table>
-            </div>
-          </div>
+    <!-- 최근 3년 신고상황 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label">최근 3년 종합소득세 신고상황</span>
+        <span class="badge-sub">(단위: 천원)</span>
+      </div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table class="data-table history-table" id="table-history">
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th class="num" id="yr-0"></th>
+                <th class="num" id="yr-1"></th>
+                <th class="num" id="yr-2"></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-history"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-    </div><!-- /result-section -->
-  </div><!-- /tab-analyze -->
+    <!-- 밀착관리 CTA -->
+    <div class="upgrade-cta" onclick="route('/deep-care')">
+      <div class="upgrade-left">
+        <div class="upgrade-title">세무 밀착관리 시작하기</div>
+        <div class="upgrade-desc">매입 자료까지 넣으면 예상세액을 정확히 계산해 드려요</div>
+      </div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 6l6 6-6 6"/>
+      </svg>
+    </div>
+
+  </section>
 
 
-  <!-- ══════════════════ 이력 탭 ══════════════════ -->
-  <div id="tab-history" class="hidden">
-
-    <div class="history-header">
-      <div class="section-title">업로드 이력</div>
-      <button class="btn-refresh" onclick="loadHistory()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13.5 8A5.5 5.5 0 1 1 10 3.07"/><path d="M10 2v3h3"/>
+  <!-- ══════════════ [/deep-care] 세무 밀착관리 (Lock) ══════════════ -->
+  <section id="page-deep-care" class="page page-placeholder hidden">
+    <div class="placeholder-hero">
+      <img src="/static/assets/sevi/thinking.png" alt="세비"
+           class="placeholder-sevi" onerror="this.style.display='none'"/>
+      <div class="placeholder-lock-badge">🔒 회원 전용</div>
+      <div class="placeholder-title">세무 밀착관리</div>
+      <div class="placeholder-desc">
+        매출·매입·경비를 종합해서<br/>
+        올해 예상세액과 절세 포인트를 짚어드려요
+      </div>
+      <button class="btn-kakao" style="width:100%;max-width:320px"
+              onclick="openPaywall('deep-care')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
         </svg>
-        새로고침
+        카카오로 가입하고 시작하기
       </button>
     </div>
+  </section>
 
-    <div id="history-loading" class="loading hidden">
-      <div class="spinner"></div>
-      <div class="loading-text">불러오는 중...</div>
-    </div>
 
-    <div id="history-empty" class="history-empty hidden">
-      <div class="empty-icon-wrap">
-        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-          <rect width="56" height="56" rx="16" fill="#EEF0FF"/>
-          <path d="M20 38h16M28 18v16M22 26l6-8 6 8" stroke="#5B6CF9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ══════════════ [/withholding] 원천세 (Lock) ══════════════ -->
+  <section id="page-withholding" class="page page-placeholder hidden">
+    <div class="placeholder-hero">
+      <img src="/static/assets/sevi/thinking.png" alt="세비"
+           class="placeholder-sevi" onerror="this.style.display='none'"/>
+      <div class="placeholder-lock-badge">🔒 회원 전용</div>
+      <div class="placeholder-title">인건비·원천세 신고 가이드</div>
+      <div class="placeholder-desc">
+        직원 등록 → 원천세 자동 계산 → 홈택스 제출까지<br/>
+        세비가 옆에서 한 칸씩 짚어드려요
+      </div>
+      <button class="btn-kakao" style="width:100%;max-width:320px"
+              onclick="openPaywall('withholding')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
         </svg>
+        카카오로 가입하고 시작하기
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ══════════════ [/diagnosis-history] 진단 내역 ══════════════ -->
+  <section id="page-diagnosis-history" class="page hidden">
+    <div class="tabs-inline">
+      <button class="tab-chip active">전체</button>
+      <button class="tab-chip">기초검진</button>
+      <button class="tab-chip">밀착관리</button>
+    </div>
+    <div id="history-list" class="history-list">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">진단 내역이 없어요</div>
+        <div class="empty-sub">1분 세무진단부터 시작해 볼까요?</div>
+        <button class="btn-primary" onclick="route('/quick-check')">1분 진단 시작</button>
       </div>
-      <div style="margin-top:16px;font-weight:600;color:#64748B">업로드된 파일이 없습니다.</div>
-      <button class="btn-analyze" style="margin-top:16px;width:auto;padding:0 28px"
-              onclick="switchTab('analyze')">PDF 업로드하기</button>
+    </div>
+  </section>
+
+
+  <!-- ══════════════ [/vault] 리포트·보관함 (Lock) ══════════════ -->
+  <section id="page-vault" class="page page-placeholder hidden">
+    <div class="placeholder-hero">
+      <img src="/static/assets/sevi/thinking.png" alt="세비"
+           class="placeholder-sevi" onerror="this.style.display='none'"/>
+      <div class="placeholder-lock-badge">🔒 회원 전용</div>
+      <div class="placeholder-title">자료 보관함</div>
+      <div class="placeholder-desc">
+        신고서·증빙·경비를 <b>5년간 안전하게</b><br/>
+        필요할 때 바로 꺼내쓸 수 있어요
+      </div>
+      <button class="btn-kakao" style="width:100%;max-width:320px"
+              onclick="openPaywall('vault')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
+        </svg>
+        카카오로 가입하고 시작하기
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ══════════════ [/calendar] 세무 일정 ══════════════ -->
+  <section id="page-calendar" class="page page-placeholder hidden">
+    <div class="placeholder-hero">
+      <div class="placeholder-title">세무 캘린더</div>
+      <div class="placeholder-desc">
+        신고기한·납부일을 한 눈에<br/>
+        D-day 알림으로 놓치지 않게 도와드려요
+      </div>
+      <div class="placeholder-pill">🗓 캘린더 화면 준비중</div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════ [/me] 내정보·고객센터 ══════════════ -->
+  <section id="page-me" class="page page-me hidden">
+    <div class="me-profile">
+      <div class="me-avatar">
+        <img id="me-avatar-img" src="" alt="" onerror="this.style.display='none'"/>
+        <span id="me-avatar-initial">ㅅ</span>
+      </div>
+      <div class="me-info">
+        <div class="me-name" id="me-name">사장님</div>
+        <div class="me-status">무료 회원</div>
+      </div>
+      <button class="btn-ghost-sm" onclick="logout()">로그아웃</button>
     </div>
 
-    <!-- 납세자 목록 -->
-    <div id="history-list" class="history-list"></div>
+    <div class="me-menu">
+      <a class="me-row" onclick="showToast('사업자 정보 화면은 준비 중이에요')">
+        <span class="me-row-label">📄 사업자 정보</span>
+        <span class="me-row-value">업종·사업장 관리</span>
+      </a>
+      <a class="me-row" onclick="showToast('이용권 화면은 준비 중이에요')">
+        <span class="me-row-label">💎 이용권 관리</span>
+        <span class="me-row-value">무료</span>
+      </a>
+      <a class="me-row" onclick="showToast('결제 내역은 준비 중이에요')">
+        <span class="me-row-label">💳 결제 내역</span>
+        <span class="me-row-value">-</span>
+      </a>
+      <a class="me-row" onclick="showToast('고객센터는 준비 중이에요')">
+        <span class="me-row-label">💬 고객센터</span>
+        <span class="me-row-value">FAQ · 1:1 문의</span>
+      </a>
+      <a class="me-row" onclick="showToast('공지사항은 준비 중이에요')">
+        <span class="me-row-label">📢 공지사항</span>
+        <span class="me-row-value">-</span>
+      </a>
+    </div>
 
-    <!-- 이력 상세 -->
-    <div id="history-detail" class="hidden">
-
-      <div class="card card-primary">
-        <div class="card-header"><span class="card-label">납세자 기본정보</span></div>
-        <div class="card-body info-grid" id="card-taxpayer-h"></div>
-      </div>
-
-      <div class="card card-ai">
-        <div class="card-header ai-header">
-          <span class="card-label">AI 분석 리포트</span>
-          <span id="ai-risk-badge-h" class="risk-badge risk-medium hidden"></span>
-          <div class="ai-loading" id="ai-loading-h">
-            <div class="spinner-sm"></div> 분석 중...
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="ai-comments" id="ai-comments-h"></div>
-          <div class="ai-note" id="ai-note-h"></div>
-        </div>
-      </div>
-
-      <div class="card card-calc">
-        <div class="card-header calc-header">
-          <span class="card-label">예상 세금 계산</span>
-          <span class="badge-sub">2024년 귀속 기준</span>
-          <div class="calc-loading" id="calc-loading-h">
-            <div class="spinner-sm"></div> 계산 중...
-          </div>
-        </div>
-        <div class="card-body"><div class="calc-steps" id="calc-steps-h"></div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">사업장별 수입금액</span>
-          <span id="biz-total-badge-h" class="badge"></span>
-        </div>
-        <div class="card-body"><div class="table-wrap">
-          <table class="data-table responsive-card">
-            <thead><tr>
-              <th>사업자번호</th><th>상호</th><th>수입종류</th><th>경비율</th>
-              <th class="num">수입금액</th>
-            </tr></thead>
-            <tbody id="tbody-businesses-h"></tbody>
-          </table>
-        </div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">최근 3년 종합소득세 신고상황</span>
-          <span class="badge-sub">(단위: 천원)</span>
-        </div>
-        <div class="card-body"><div class="table-wrap">
-          <table class="data-table history-table">
-            <thead><tr>
-              <th>구분</th>
-              <th class="num" id="yr-0-h"></th>
-              <th class="num" id="yr-1-h"></th>
-              <th class="num" id="yr-2-h"></th>
-            </tr></thead>
-            <tbody id="tbody-history-h"></tbody>
-          </table>
-        </div></div>
-      </div>
-
-    </div><!-- /history-detail -->
-  </div><!-- /tab-history -->
+    <div class="me-version">ByeTax v0.3 · 사장님의 세무비서 세비</div>
+  </section>
 
 </main>
 
-<!-- ── 바텀 액션 바 ──────────────────────────────────────────── -->
-<div id="action-bar" class="action-bar hidden">
-  <button class="action-btn action-btn-share" onclick="actionShare()">
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="15" cy="4" r="2"/><circle cx="15" cy="16" r="2"/><circle cx="5" cy="10" r="2"/>
-      <path d="M13.2 5L6.8 9.1M6.8 10.9l6.4 4.1"/>
-    </svg>
-    링크 공유
-  </button>
-  <button class="action-btn action-btn-excel" onclick="actionExcel()">
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M10 3v10M7 9l3 4 3-4"/><rect x="3" y="14" width="14" height="3" rx="1"/>
-    </svg>
-    엑셀 다운로드
-  </button>
-</div>
 
-<!-- ── 공유 모달 (바텀시트) ─────────────────────────────────────── -->
-<div id="share-modal" class="modal-overlay hidden" onclick="closeShareModal(event)">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3>링크 공유</h3>
-      <button class="modal-close" onclick="closeShareModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="share-url-box">
-        <input id="share-url-input" type="text" readonly />
-        <button class="share-copy-btn" onclick="copyShareUrl()">복사</button>
-      </div>
-      <div class="share-buttons">
-        <button class="share-btn share-btn-kakao" onclick="shareKakao()">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C5.582 2 2 4.806 2 8.25c0 2.145 1.408 4.03 3.538 5.114l-.9 3.347a.25.25 0 0 0 .373.278L9.083 14.3c.3.03.609.045.917.045 4.418 0 8-2.806 8-6.295S14.418 2 10 2z" fill="#3C1E1E"/>
-          </svg>
-          카카오톡
-        </button>
-        <button class="share-btn share-btn-sms" onclick="shareSMS()">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="16" height="13" rx="3"/><path d="M2 7l8 4 8-4"/>
-          </svg>
-          문자
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── 바텀 네비게이션 ─────────────────────────────────────────── -->
-<nav class="bottom-nav">
-  <button class="nav-item active" id="nav-item-analyze" onclick="switchTab('analyze')">
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M11 4v12M7 10l4-6 4 6M4 18h14"/>
+<!-- ══════════════════════════════════════════════════════════════
+     하단 탭 네비게이션
+     ══════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <a class="nav-item" data-route="/" onclick="route('/')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
     </svg>
-    <span>분석</span>
-  </button>
-  <button class="nav-item" id="nav-item-history" onclick="switchTab('history')">
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M7 3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8.5L13.5 3H7z"/>
-      <path d="M13 3v5.5H17M8 13h6M8 17h4"/>
+    <span>홈</span>
+  </a>
+  <a class="nav-item" data-route="/diagnosis" onclick="route('/diagnosis')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
     </svg>
-    <span>이력</span>
-  </button>
+    <span>진단</span>
+  </a>
+  <a class="nav-item" data-route="/vault" onclick="route('/vault')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 7l2-3h14l2 3v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>
+      <path d="M3 7h18M8 11h8"/>
+    </svg>
+    <span>리포트</span>
+  </a>
+  <a class="nav-item" data-route="/calendar" onclick="route('/calendar')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <path d="M16 2v4M8 2v4M3 10h18"/>
+    </svg>
+    <span>캘린더</span>
+  </a>
+  <a class="nav-item" data-route="/me" onclick="route('/me')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>
+    </svg>
+    <span>내정보</span>
+  </a>
 </nav>
+
 
 <script src="/static/js/app.js"></script>
 </body>
